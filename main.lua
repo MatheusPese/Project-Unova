@@ -4,8 +4,6 @@ local f = require("functions")
 function love.load()
   love.graphics.setBackgroundColor( 100, 130, 110 ) --Setting background color.
   windowX,windowY = love.graphics.getDimensions()
-  player = love.graphics.newImage("player.love")  --The "player.love" and the "enemy.love" is equivalent to a png file, wich for some reason did't work in a mobile version.
-  enemy = love.graphics.newImage("enemy.love")
   player = love.graphics.newImage("player.png")
   enemy = love.graphics.newImage("enemy.png")
 
@@ -20,6 +18,7 @@ function love.draw()
   --Debug info
   Debug(velocity, "Velocity", 0)
   Debug(tostring(fullscreen_), "FullScreen", 1)
+  Debug(tostring(touchNumber), "TouchNumber", 2)
 
   love.graphics.draw(player, posX, posY) --Draw player
   love.graphics.draw(enemy, (windowX*.9), windowY*.5) --Draw Enemy
@@ -53,6 +52,10 @@ function love.update( dt )
       if touchY > windowY*.5 then --If screen Input UP LEFT is pressed, do stuff
         posY = posY + 100 * velocity * dt
 
+        function love.touchpressed(id, x, y, dx, dy, pressure)
+          touchNumber = 1
+        end
+
         if velocity < 5 then   --Change velocity if it isn't biguer than 5
           velocity= velocity + 20 * dt
         end
@@ -61,6 +64,10 @@ function love.update( dt )
       if touchY < windowY*.5 then --If screen Input DOWN LEFT is pressed, do stuff
         posY = posY - 100 * velocity * dt
 
+        function love.touchpressed(id, x, y, dx, dy, pressure)
+          touchNumber = 1
+        end
+
         if velocity < 5 then   --Change velocity if it isn't biguer than 5
           velocity= velocity + 20 * dt
         end
@@ -68,6 +75,9 @@ function love.update( dt )
     end
 
 
+    function love.touchreleased(id, x, y, dx, dy, pressure)
+      touchNumber = 0
+    end
 
   end
 
@@ -90,7 +100,7 @@ function love.update( dt )
   end
 
   --If no key is pressed, do stuff
-  if love.keyboard.isDown("up")==false and love.keyboard.isDown( "down" )==false then
+  if love.keyboard.isDown("up")==false and love.keyboard.isDown( "down" )==false and (touchNumber == nil or touchNumber == 0) then
     velocity = 1
   end
 end
